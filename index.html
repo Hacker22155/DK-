@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Integrated Code Builder</title>
+  <!-- Bootstrap CSS from a free CDN -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    h2, h5 {
+      font-weight: 600;
+    }
+    .code-container {
+      margin-bottom: 1rem;
+    }
+    textarea {
+      width: 100%;
+      height: 150px;
+      font-family: monospace;
+      resize: vertical;
+      padding: 10px;
+      border: 1px solid #ced4da;
+      border-radius: 0.25rem;
+    }
+    #integrateBtn, #copyBtn {
+      border: 2px solid #007bff;
+      color: #007bff;
+      background-color: transparent;
+      transition: all 0.3s ease;
+    }
+    #integrateBtn:hover, #copyBtn:hover {
+      background-color: #007bff;
+      color: #fff;
+    }
+    #integrateBtn:focus, #copyBtn:focus {
+      outline: none;
+      box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+    /* Button animation on click */
+    .animate {
+      animation: buttonAnimation 0.5s;
+    }
+    @keyframes buttonAnimation {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+    /* Iframe styling for live preview */
+    #preview {
+      width: 100%;
+      height: 300px;
+      border: 1px solid #ced4da;
+      border-radius: 0.25rem;
+    }
+    /* Read-only integrated code display */
+    #combinedCode {
+      width: 100%;
+      height: 200px;
+      font-family: monospace;
+      padding: 10px;
+      border: 1px solid #ced4da;
+      border-radius: 0.25rem;
+      background-color: #e9ecef;
+      resize: vertical;
+    }
+    /* Mobile responsiveness */
+    @media (max-width: 576px) {
+      textarea { height: 120px; }
+      #preview { height: 250px; }
+      #combinedCode { height: 150px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container py-4">
+    <h2 class="mb-4 text-center">DK Shuvo Code</h2>
+    <div class="row">
+      <div class="col-md-4 code-container">
+        <h5>HTML Code</h5>
+        <textarea id="htmlCode" placeholder="Enter HTML code here"></textarea>
+      </div>
+      <div class="col-md-4 code-container">
+        <h5>CSS Code</h5>
+        <textarea id="cssCode" placeholder="Enter CSS code here"></textarea>
+      </div>
+      <div class="col-md-4 code-container">
+        <h5>JavaScript Code</h5>
+        <textarea id="jsCode" placeholder="Enter JavaScript code here"></textarea>
+      </div>
+    </div>
+    <div class="text-center mb-3">
+      <button id="integrateBtn" class="btn btn-outline-primary">
+        Integrate &amp; Generate Code
+      </button>
+    </div>
+    <div class="mb-4">
+      <h5>Integrated Code (Copy and Use in One File):</h5>
+      <textarea id="combinedCode" readonly></textarea>
+      <div class="text-right mt-2">
+        <button id="copyBtn" class="btn btn-outline-primary">Copy to Clipboard</button>
+      </div>
+    </div>
+    <div>
+      <h5 class="mb-2">Live Preview:</h5>
+      <iframe id="preview"></iframe>
+    </div>
+  </div>
+
+  <script>
+    // Function to integrate code and display in the textarea and iframe
+    document.getElementById("integrateBtn").addEventListener("click", function () {
+      var btn = this;
+      btn.classList.add("animate");
+      setTimeout(function () {
+        btn.classList.remove("animate");
+      }, 500);
+      
+      // Retrieve code from each textarea
+      var htmlContent = document.getElementById("htmlCode").value;
+      var cssContent = document.getElementById("cssCode").value;
+      var jsContent = document.getElementById("jsCode").value;
+
+      // Combine the code into one complete HTML structure
+      var integratedCode = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Integrated Code</title>
+  <style>
+    ${cssContent}
+  </style>
+</head>
+<body>
+  ${htmlContent}
+  <script>
+    ${jsContent}
+  <\/script>
+</body>
+</html>`;
+
+      // Display the integrated code in the read-only textarea
+      document.getElementById("combinedCode").value = integratedCode;
+
+      // Write the integrated code into the iframe for live preview
+      var previewFrame = document.getElementById("preview");
+      var preview = previewFrame.contentDocument || previewFrame.contentWindow.document;
+      preview.open();
+      preview.write(integratedCode);
+      preview.close();
+    });
+
+    // Copy to clipboard functionality
+    document.getElementById("copyBtn").addEventListener("click", function () {
+      var codeText = document.getElementById("combinedCode");
+      codeText.select();
+      codeText.setSelectionRange(0, 99999); // for mobile devices
+      try {
+        var successful = document.execCommand('copy');
+        if(successful) {
+          alert("Copied to clipboard!");
+        } else {
+          alert("Unable to copy!");
+        }
+      } catch (err) {
+        alert("Copy not supported!");
+      }
+    });
+  </script>
+
+  <!-- Bootstrap JS and its dependencies -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
